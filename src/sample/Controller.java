@@ -59,19 +59,21 @@ public class Controller {
         AtomicReference<Entity> nextEntity = new AtomicReference<>();
 
         nextButton.setOnAction(event -> {
-
+                    System.out.println(entityIndex);
                     //Alter objects
+
                     Entity entity = entityArrayList.get(entityIndex.get());
+                    System.out.println(entity.getName());
+                    System.out.println(attributeIndex);
+                    System.out.println(entity.getAttributeArrayList().get(0).getName());
                     Attribute attribute = entity.getAttributeArrayList().get( attributeIndex.get() );
+                    System.out.println(attribute.getName());
                     attribute.setType(attributeCombo.getValue().toString());
                     attribute.setIsNotNull(notNullCheckBox.isSelected());
 
                     //Define the next attribute
                     nextAttribute.set(getNextAttribute(entityArrayList, entityIndex.get(), attributeIndex.get()));
                     attributeLabel.textProperty().bind(nextAttribute.get().nameProperty().concat(" <- Attribute"));
-
-
-                    //change label
 
                     //increase counters
                     attributeIndex.getAndIncrement();
@@ -121,7 +123,6 @@ public class Controller {
         ArrayList<Entity> entityArrayList = new ArrayList<>();
         ArrayList<Attribute> attributeArrayList = new ArrayList<>();
         for (Object entity: entities) {
-            attributeArrayList.clear();
             JSONObject JSONentity = (JSONObject) entity ;
             JSONArray JSONArrayAttributes = (JSONArray) JSONentity.get("atributos");
             String entityName = JSONentity.get("nombre").toString();
@@ -131,12 +132,14 @@ public class Controller {
 
                 JSONObject JSONAttribute = (JSONObject) attribute;
                 String strAttributeName = JSONAttribute.get("nombre").toString();
-                SimpleStringProperty attributeName = new SimpleStringProperty(strAttributeName);
-                attributeArrayList.add(new Attribute(attributeName, attributeType));
+                System.out.println(strAttributeName);
+                attributeArrayList.add(new Attribute(new SimpleStringProperty(strAttributeName), attributeType));
 
             }
             SimpleStringProperty stringProperty = new SimpleStringProperty(entityName);
-            entityArrayList.add(new Entity(stringProperty, attributeArrayList));
+            entityArrayList.add(new Entity(stringProperty, (ArrayList<Attribute>) attributeArrayList.clone()));
+            attributeArrayList.clear();
+
         }
 
         return entityArrayList;
@@ -150,13 +153,10 @@ public class Controller {
 
         //iterate over relations
         for (Object relation: relations) {
-            System.out.println(relation);
             JSONObject JSONrelation = (JSONObject) relation ;
             JSONArray cardinalities = (JSONArray) JSONrelation.get("cardinalidades");
-            System.out.println(cardinalities);
             JSONObject cardinality1 = (JSONObject) cardinalities.get(0);
             JSONObject cardinality2 = (JSONObject) cardinalities.get(1);
-            System.out.println(cardinality1);
 
             //check if the relation is one to one
             if(cardinality1.get("max").toString().equals("1") && cardinality2.get("max").toString().equals("1")) {
@@ -186,7 +186,6 @@ public class Controller {
             //check if the relation is many to many
             if(cardinality1.get("max").toString().equals("n") && cardinality2.get("max").toString().equals("n")){
                 String entity1 = cardinality1.get("entidad").toString();
-                System.out.println(entity1);
                 String entity2 = cardinality2.get("entidad").toString();
                 manyToManyArray.add(new RelationManyToMany(entity1, entity2));
             }
@@ -213,7 +212,6 @@ public class Controller {
     }
 
     public Entity getNextEntity(ArrayList<Entity> entityArrayList, int currentEntityIndex) {
-        System.out.println(currentEntityIndex);
         Entity entity;
         if(entityArrayList.size() == currentEntityIndex + 1) {
             entity = entityArrayList.get(0);

@@ -27,7 +27,7 @@
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="VARCHAR"/>
                         <String fx:value="INT"/>
-                        <String fx:value="DATETIME"/>
+                        <String fx:value="DATE"/>
                         <String fx:value="BOOLEAN"/>
                     </FXCollections>
                 </items>

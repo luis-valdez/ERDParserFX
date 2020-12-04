@@ -16,9 +16,10 @@ public class QueryBuilder {
         int i = 1;
         //Add one to one relations
         for (Relation r: relationArrayList) {
-            if(r.getEntityName1().equals(entity.getName())){
-                sb.append(String.format("%s_id INT NOT NULL REFERENCES %s(%s_id), \n", r.entityName2, r.entityName2, r.entityName2));
-                break;
+            if(r.isOneToOne) {
+                if(r.getEntityName1().equals(entity.getName())){
+                    sb.append(String.format("%s_id INT NOT NULL REFERENCES %s(id), \n", r.entityName2, r.entityName2, r.entityName2));
+                }
             }
         }
         for (Attribute attribute : entity.getAttributeArrayList()) {
@@ -31,7 +32,7 @@ public class QueryBuilder {
                     break;
                 case "INT":
                 case "BOOLEAN":
-                case "DATETIME":
+                case "DATE":
                     sb.append(String.format("%s %s", attribute.getName(), attribute.getType()));
                     break;
             }
